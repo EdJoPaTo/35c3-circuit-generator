@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "node memories.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "GPL-3.0",
+  "dependencies": {
+    "paper-jsdom-canvas": "^0.12.0"
+  }
+}

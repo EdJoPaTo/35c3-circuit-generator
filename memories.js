@@ -1,3 +1,15 @@
+var fs = require('fs')
+var paper = require('paper');
+var {
+  Group,
+  Path,
+  Point,
+  PointText,
+  Rectangle,
+  Segment,
+  Size
+} = paper
+
 //want more? make a pull request!
 var text = [
     "35c3",
@@ -84,36 +96,28 @@ var text = [
     "WRITE ONLY"
     ];
 
-// get query strings for text, stroke width and font size
-function QueryStringToJSON() {
-  var pairs = window.location.search.slice(1).split('&');
-  var result = {};
-  pairs.forEach(function(pair) {
-    pair = pair.split('=');
-    result[pair[0]] = decodeURIComponent(pair[1] || '');
-  });
-  return JSON.parse(JSON.stringify(result));
-}
-var queries = QueryStringToJSON()
-
 //initial settings
-var fak = parseInt(queries.scale) || 2;
-var fontsize = parseInt(queries.fontsize) || 30
+var fak = 2;
+var fontsize = 30;
 var rst = 100*fak;
-var strokeW = parseInt(queries.strokewidth) || 3;
+var strokeW = 3;
 
 var gradientStart = '#0084b0'
 var gradientStop = '#00a356'
 
-//start Paper.js project
-paper.install(window);
-window.onload = function() {
-    if (queries.text) {
-      document.getElementById('usertext').value = queries.text
+generateStandalone()
+function generateStandalone(usertext = '') {
+    var settings = {
+        text: defineText(usertext),
+        size: new Size(1500, 1000)
     }
+    paper.setup(settings.size);
+    var im = new Group();
+    generateContent(settings)
 
-    paper.setup('myCanvas');
-    generate();
+    var svg = paper.project.exportSVG({ asString: true });
+    var modifiedSvg = colorizeSvgString(svg, settings)
+    fs.writeFileSync('output.svg', modifiedSvg, 'utf8')
 }
 
 //generation routine
@@ -937,4 +941,8 @@ function raster(val){
 
 function choose(arr){
     return arr[rnd(0,arr.length-1)];
+}
+
+module.exports = {
+    generateStandalone
 }
